@@ -63,10 +63,10 @@ export class ItemsService {
 
   private async checkAvailability(itemId: string): Promise<boolean> {
     const count = await this.loansRepository.count({
-      where: {
-        itemId,
-        status: LoanStatus.ACTIVE,
-      },
+      where: [
+        { itemId, status: LoanStatus.ACTIVE },
+        { itemId, status: LoanStatus.OVERDUE },
+      ],
     });
     return count === 0;
   }
