@@ -203,4 +203,4 @@ npm run start:dev
 
 ## Bonos implementados
 
-Ninguno.
+- **B3: GitHub Actions CI** — `.github/workflows/ci.yml` con lint, test, build y docker build en cada push/PR.
