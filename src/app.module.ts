@@ -4,6 +4,8 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import configuration from './config/configuration';
 import { validationSchema } from './config/validation.schema';
 import { HealthModule } from './modules/health/health.module';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { HealthModule } from './modules/health/health.module';
         logging: config.get<boolean>('database.logging'),
       }),
     }),
+    UsersModule,
+    AuthModule,
     HealthModule,
   ],
 })
