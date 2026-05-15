@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { ConflictException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { LoansService } from './loans.service';
 import { Loan, LoanStatus } from './entities/loan.entity';
@@ -50,8 +50,8 @@ describe('LoansService', () => {
         {
           provide: ConfigService,
           useValue: {
-            get: jest.fn((key: string, defaultValue?: any) => {
-              const map: Record<string, any> = {
+            get: jest.fn((key: string, defaultValue?: number) => {
+              const map: Record<string, number> = {
                 'loans.maxLoanDays': 30,
                 'loans.maxActivePerUser': 3,
                 'loans.dailyFineRate': 0.5,
@@ -107,13 +107,15 @@ describe('LoansService', () => {
         status: LoanStatus.ACTIVE,
         fineAmount: 0,
       };
-      dataSource.transaction.mockImplementation(async (cb: any) => {
-        const manager = {
-          create: jest.fn().mockReturnValue(savedLoan),
-          save: jest.fn().mockResolvedValue(savedLoan),
-        };
-        return cb(manager);
-      });
+      dataSource.transaction.mockImplementation(
+        async (cb: (mgr: { create: jest.Mock; save: jest.Mock }) => Promise<Loan>) => {
+          const manager = {
+            create: jest.fn().mockReturnValue(savedLoan),
+            save: jest.fn().mockResolvedValue(savedLoan),
+          };
+          return cb(manager);
+        },
+      );
 
       const result = await service.create(dto);
 
